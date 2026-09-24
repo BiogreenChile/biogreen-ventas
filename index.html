@@ -118,6 +118,7 @@
   .panel { background: var(--blanco); border-radius: 14px; padding: 16px 18px; box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
   .panel-head { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--verde-suave); padding-bottom: 6px; margin-bottom: 12px; }
   .panel-head h3 { margin: 0; color: var(--verde-oscuro); font-size: 1rem; font-weight: 500; display: flex; align-items: center; }
+  .panel-note { margin: 0 0 12px; font-size: 0.78rem; color: var(--verde-oscuro); background: var(--verde-suave); border-left: 3px solid var(--verde-biogreen); padding: 6px 10px; border-radius: 0 6px 6px 0; }
   .btn-xlsx { background: var(--verde-biogreen); color: var(--blanco); border: none; padding: 6px 12px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; font-family: inherit; font-weight: 500; }
   .btn-xlsx:hover { background: var(--verde-oscuro); }
   .chip { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--verde-biogreen); color: var(--blanco); font-size: 0.72rem; font-weight: 700; margin-right: 8px; }
@@ -201,6 +202,7 @@
         <h3><span class="chip">B</span>Bionet — Top ventas</h3>
         <button class="btn-xlsx" id="dl-bionet">Descargar</button>
       </div>
+      <p class="panel-note">Muestra productos simples y compuestos.</p>
       <div class="scroll"><table id="tbl-bionet"><thead><tr><th class="rk">#</th><th>SKU</th><th>Descripción</th><th class="num">Unidades vendidas</th><th class="num">Stock actual</th><th>Acción</th></tr></thead><tbody></tbody></table></div>
     </div>
     <div class="panel">
@@ -208,6 +210,7 @@
         <h3><span class="chip chip-s">S</span>Softland — Top ventas</h3>
         <button class="btn-xlsx" id="dl-softland">Descargar</button>
       </div>
+      <p class="panel-note">Muestra solo la venta unitaria de cada producto.</p>
       <div class="scroll"><table id="tbl-softland"><thead><tr><th class="rk">#</th><th>SKU</th><th>Descripción</th><th class="num">Unidades vendidas</th><th class="num">Stock actual</th><th>Acción</th></tr></thead><tbody></tbody></table></div>
     </div>
   </div>
