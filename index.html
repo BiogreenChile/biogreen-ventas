@@ -123,11 +123,22 @@
   .chip { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; background: var(--verde-biogreen); color: var(--blanco); font-size: 0.72rem; font-weight: 700; margin-right: 8px; }
   .chip-s { background: var(--verde-claro); }
   table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
-  th { text-align: left; padding: 8px 6px; background: var(--verde-suave); color: var(--verde-oscuro); font-weight: 500; border-bottom: 1px solid var(--gris-borde); }
-  td { padding: 8px 6px; border-bottom: 1px solid #eee; }
-  tr:hover { background: #f9f9f5; cursor: pointer; }
-  tr.active { background: var(--verde-suave); }
-  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  th { text-align: left; padding: 9px 8px; background: var(--verde-suave); color: var(--verde-oscuro); font-weight: 600; font-size: 0.72rem; text-transform: uppercase; letter-spacing: 0.4px; border-bottom: 2px solid var(--verde-biogreen); position: sticky; top: 0; z-index: 5; }
+  td { padding: 9px 8px; border-bottom: 1px solid #f0f0f0; }
+  tbody tr:nth-child(even) { background: #fafbfa; }
+  tr:hover { background: var(--verde-suave); cursor: pointer; }
+  tr.active { background: var(--verde-suave); box-shadow: inset 3px 0 0 var(--verde-biogreen); }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; }
+  th.rk, td.rk { text-align: center; width: 38px; padding-left: 4px; padding-right: 4px; }
+  .rank { display: inline-flex; align-items: center; justify-content: center; min-width: 22px; height: 22px; font-size: 0.78rem; font-weight: 600; color: #9a9a9a; font-variant-numeric: tabular-nums; }
+  .rank.medal { border-radius: 50%; color: #fff; font-weight: 700; }
+  .rank.m1 { background: #d4a017; }
+  .rank.m2 { background: #9ca3af; }
+  .rank.m3 { background: #b3712e; }
+  .stk { display: inline-block; min-width: 46px; padding: 2px 8px; border-radius: 12px; font-size: 0.78rem; font-weight: 600; font-variant-numeric: tabular-nums; text-align: center; color: #6b7280; background: #f1f1ef; }
+  .stk-ok { color: var(--verde-oscuro); background: var(--verde-suave); }
+  .stk-low { color: #a86500; background: #fbf1de; }
+  .stk-out { color: #b42318; background: #fdeceb; }
   .scroll { max-height: 500px; overflow-y: auto; }
   .empty { text-align: center; padding: 14px; color: #aaa; font-size: 0.85rem; font-style: italic; }
   footer { text-align: center; padding: 24px; color: #999; font-size: 0.8rem; }
@@ -190,14 +201,14 @@
         <h3><span class="chip">B</span>Bionet — Top ventas</h3>
         <button class="btn-xlsx" id="dl-bionet">Descargar</button>
       </div>
-      <div class="scroll"><table id="tbl-bionet"><thead><tr><th>SKU</th><th>Descripción</th><th class="num">Vendidas</th><th>Acción</th></tr></thead><tbody></tbody></table></div>
+      <div class="scroll"><table id="tbl-bionet"><thead><tr><th class="rk">#</th><th>SKU</th><th>Descripción</th><th class="num">Unidades vendidas</th><th class="num">Stock actual</th><th>Acción</th></tr></thead><tbody></tbody></table></div>
     </div>
     <div class="panel">
       <div class="panel-head">
         <h3><span class="chip chip-s">S</span>Softland — Top ventas</h3>
         <button class="btn-xlsx" id="dl-softland">Descargar</button>
       </div>
-      <div class="scroll"><table id="tbl-softland"><thead><tr><th>SKU</th><th>Descripción</th><th class="num">Vendidas</th><th>Acción</th></tr></thead><tbody></tbody></table></div>
+      <div class="scroll"><table id="tbl-softland"><thead><tr><th class="rk">#</th><th>SKU</th><th>Descripción</th><th class="num">Unidades vendidas</th><th class="num">Stock actual</th><th>Acción</th></tr></thead><tbody></tbody></table></div>
     </div>
   </div>
 </main>
@@ -343,8 +354,20 @@
         if (!r.acciones || !r.acciones.length) return '<td style="color:#bbb;">—</td>';
         return '<td>' + r.acciones.map(a => '<span class="badge" style="padding:2px 8px;font-size:0.72rem;margin:1px;">' + a + '</span>').join('') + '</td>';
       };
-      $('#tbl-bionet tbody').innerHTML = bn.map(r => '<tr data-sku="' + r.sku + '"><td>' + r.sku + '</td><td>' + (r.desc||'') + '</td><td class="num">' + fmt(r.bionet_cant) + '</td>' + acCell(r) + '</tr>').join('') || '<tr><td colspan="4" class="empty">Sin datos</td></tr>';
-      $('#tbl-softland tbody').innerHTML = sl.map(r => '<tr data-sku="' + r.sku + '"><td>' + r.sku + '</td><td>' + (r.desc||'') + '</td><td class="num">' + fmt(r.softland_cant) + '</td>' + acCell(r) + '</tr>').join('') || '<tr><td colspan="4" class="empty">Sin datos</td></tr>';
+      const rkCell = (i) => {
+        const pos = i + 1;
+        const medalla = pos <= 3 ? ' medal m' + pos : '';
+        return '<td class="rk"><span class="rank' + medalla + '">' + pos + '</span></td>';
+      };
+      const stkCell = (r) => {
+        const s = r.stock;
+        if (s == null) return '<td class="num"><span class="stk">—</span></td>';
+        const cls = s <= 0 ? 'stk-out' : (s < 50 ? 'stk-low' : 'stk-ok');
+        return '<td class="num"><span class="stk ' + cls + '">' + fmt(s) + '</span></td>';
+      };
+      const rowHtml = (r, i, cant) => '<tr data-sku="' + r.sku + '">' + rkCell(i) + '<td>' + r.sku + '</td><td>' + (r.desc||'') + '</td><td class="num">' + fmt(cant) + '</td>' + stkCell(r) + acCell(r) + '</tr>';
+      $('#tbl-bionet tbody').innerHTML = bn.map((r,i) => rowHtml(r, i, r.bionet_cant)).join('') || '<tr><td colspan="6" class="empty">Sin datos</td></tr>';
+      $('#tbl-softland tbody').innerHTML = sl.map((r,i) => rowHtml(r, i, r.softland_cant)).join('') || '<tr><td colspan="6" class="empty">Sin datos</td></tr>';
       document.querySelectorAll('tr[data-sku]').forEach(tr => tr.addEventListener('click', () => renderDetail(tr.dataset.sku)));
     }
 
